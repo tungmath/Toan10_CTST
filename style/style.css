@@ -1,0 +1,43 @@
+html {
+  background-color: #fffff0;
+}
+
+body  {
+  font-size: 20pt;
+  background-color: rgb(231, 234, 183);
+  width: 600px;
+  border: 2px solid red;
+  padding: 50px 50px;
+  margin:auto auto;
+}
+
+h1 {
+  background-color: white;
+  text-align: center;
+  font-size:20pt;
+}
+
+p,
+ol {
+  line-height:2;
+  background-color: white;
+  padding: 0px 10px 0px 50px;
+}
+
+li{
+  line-height: 2;
+}
+
+span {
+  font-style: italic;
+}
+
+footer {
+  font-size: small;
+  color: white;
+}
+
+a {
+  color: blue;
+  font-style:oblique;
+}

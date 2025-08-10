@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!-- KaTeX requires the use of the HTML5 doctype. Without it, KaTeX may not render properly -->
+<html>
+  <head>
+    <title>Chương 9, bài 1 </title>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.19/dist/katex.min.css" integrity="sha384-7lU0muIg/i1plk7MgygDUp3/bNRA65orrBub4/OSWHECgwEsY83HaS1x3bljA/XV" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.19/dist/katex.min.js" integrity="sha384-RdymN7NRJ+XoyeRY4185zXaxq9QWOOx3O7beyyrRK4KQZrPlCDQQpCu95FoCGPAE" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.19/dist/contrib/auto-render.min.js" integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+              // customised options
+              // • auto-render specific keys, e.g.:
+              delimiters: [
+                  {left: '$$', right: '$$', display: true},
+                  {left: '$', right: '$', display: false},
+                  {left: '\\(', right: '\\)', display: false},
+                  {left: '\\[', right: '\\]', display: true}
+              ],
+              // • rendering keys, e.g.:
+              throwOnError : false
+            });
+        });
+    </script>
+  <link href="../../../style/chuong.css" rel="stylesheet"/>
+
+</head>
+<body>
+  <header>
+    Trang thử nghiệm: <br> Tạo câu hỏi môn Toán lớp 10 và 11 tự động.<br>
+    <a href="../../../index.html">Về trang chính</a><br>
+    <a href="../../lop10.html"> Lớp 10</a><br>
+    <a href="../chuong9.html">Chương 9</a>
+  </header>
+
+  <h1>
+    Bài 2. Đường thẳng trong mặt phẳng tọa độ.
+  </h1>
+
+  <button class="cauHoi">
+    <h2 class="content"></h2>
+    <p class="equation"></p>
+  </button>
+
+  <ol type="A" class="choices"> <!--class này choices có s để dùng chọn chỉ định nhóm bên js-->
+    <li><button class="choice">.</button></li> 
+    <li><button class="choice">.</button></li>
+    <li><button class="choice">.</button></li>
+    <li><button class="choice">.</button></li>
+  </ol>
+
+  <p id="button"><button id="result">Xem đáp án</button></p>
+
+  <p id="button"><button id="restart">Câu hỏi mới</button></p>
+  
+  <script src="../../../script/common.js"></script>
+  <script src="bai2.js"></script>
+</body>
+</html>
+
+
+
