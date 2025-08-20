@@ -43,16 +43,17 @@
     <p class="equation"></p>
   </button>
 
-  <ol type="A" class="choices"> <!-- class này choices có s để dùng chọn chỉ định nhóm bên js-->
+  <ul class="choices"> <!-- class này choices có s để dùng chọn chỉ định nhóm bên js-->
     <li><button class="choice">.</button></li>
     <li><button class="choice">.</button></li>
     <li><button class="choice">.</button></li>
     <li><button class="choice">.</button></li>
-  </ol>
+  </ul>
 
-  <p id="button"><button id="result">Xem đáp án</button></p>
-
-  <p id="button"><button id="restart">Câu hỏi mới</button></p>
+  <div style="display: flex; flex-direction: row; margin-top: 40px; gap: 20px; justify-content: space-between;">
+    <button id="result">Xem đáp án</button>
+    <button id="restart">Câu hỏi mới</button>
+  </div>
   
   <script defer src="../../../script/common.js"></script>
   <script defer src="menhDe.js"></script>

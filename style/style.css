@@ -1,12 +1,12 @@
 html {
-  background-color: #142e57;
+  background-color: rgb(68, 68, 68);
   color:white;
 }
 
 body  {
   font-size: 20pt;
-  background-color: rgb(32, 8, 98);
-  width: 600px;
+  background-color: black;
+  width: 1000px;
   padding: 50px 50px;
   margin:auto auto;
 }
@@ -18,9 +18,11 @@ h1 {
 }
 
 p,
-ol {
+ul {
   line-height:2;
   padding: 0px 10px 0px 50px;
+  gap: 20px;
+  list-style: none;
 }
 
 li{
@@ -34,7 +36,7 @@ span {
 footer {
   font-size: small;
   color: black;
-  background-color: blue;
+  background-color: rgb(60, 78, 47);
 }
 
 a {

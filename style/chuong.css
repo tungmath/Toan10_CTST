@@ -1,5 +1,5 @@
 html {
-    background-color: rgb(20, 38, 97);
+    background-color: rgb(68, 68, 68);
     color:white;
 }
 
@@ -8,7 +8,7 @@ body {
     font-family:'Times New Roman', Times, serif;
     font-size: 30pt;
     border: 5px solid black;
-    background-color:rgb(32, 8, 98);
+    background-color:black;
     padding: 50px 50px;
     margin:auto auto;
 }
@@ -20,11 +20,12 @@ h1 {
 }
 
 .cauHoi {
-    background-color: rgb(136, 96, 2);
+    background-color: rgba(61, 61, 61, 0.503);
     border: 0.5ex;
     border-color: black;
     height: 600px;
     width: 1000px;
+    margin-bottom: 50px;
 }
 
 .content {
@@ -43,18 +44,31 @@ h1 {
     color: white;
 }
 
+.choices {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* canh giữa các choice */
+    gap: 20px;
+}
+
 .choice {
     font-size:30pt;
     text-align: center;
-    vertical-align: 3em;
+    justify-content: center;
+    list-style: none;
     font-family: 'Times New Roman', Times, serif;
     width: 950px;
-    height:420px;
+    height:auto;
+    min-height: 200px;
     border-color: black;
     border-width:0.2ex;
-    color: rgb(250, 250, 250);
-    background-color: rgba(24, 24, 24, 0.503);
+    color: white;
+    background-color: rgba(61, 61, 61, 0.503);
     float:none ;
+    margin: 0 auto;
 }
 
 .correct{ /* đáp an đúng */
@@ -75,14 +89,25 @@ h1 {
     background-color:gray;
 }
 
-#result,#restart {
+#result {
     color:white;
     font-weight: bold;
     text-align: center;
     width: 400px;
     height: 150px;
     font-size: 30pt;
-    background-color:rgb(22, 144, 231);
+    background-color:rgb(242, 146, 21);
+    border-width:0.5ex;
+}
+
+#restart {
+    color:white;
+    font-weight: bold;
+    text-align: center;
+    width: 400px;
+    height: 150px;
+    font-size: 30pt;
+    background-color:rgb(17, 98, 238);
     border-width:0.5ex;
 }
 
@@ -95,3 +120,4 @@ a {
     color: yellow;
     font-style:oblique;
   }
+
