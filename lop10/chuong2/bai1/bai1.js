@@ -40,7 +40,7 @@ function tim2Diem_veBoMienNghiem(a,b,c){// xác định x1, y1, x2, y2 để v�
         }
     } else {// c khác 0
         if (a===0 || b===0){// 2. nếu là dạng x = c/a hay y = c/b. vẽ đường song song với trục
-            let nghiem = soNguyenDuong(50)+70; //chọn đại giá trị c/a hay c/b là số dương đại diện.
+            let nghiem = soNguyenDuong(40)+70; //chọn đại giá trị c/a hay c/b là số dương đại diện.
             if (-c/(a+b)<0){// nếu < 0 thì đổi dấu.
                 nghiem = -nghiem;
             }
@@ -48,11 +48,11 @@ function tim2Diem_veBoMienNghiem(a,b,c){// xác định x1, y1, x2, y2 để v�
             if (a != 0){// đường x=nghiem
                 return [nghiem,-200, nghiem, 200,-a*nghiem];// kèm C lớn scale
             } else {// đường y=nghiem
-                return [-200, nghiem, 200, nghiem,-a*nghiem];// kèm C lớn scale
+                return [-200, nghiem, 200, nghiem,-b*nghiem];// kèm C lớn scale
             }
         } else {// 3. cả a, b, c khác 0. vẽ cắt cả 2 trục.
             let M = Math.max(Math.abs(c/b),Math.abs(c/a));// tìm max của 2 điểm cắt.
-            let R = Math.random()*20+140;// tạo số ngẫu nhiên trong khoảng [140;160]
+            let R = soNguyenDuong(20)+140;// tạo số ngẫu nhiên trong khoảng [140;160]
             let scale=R/M; // hệ số co dãn hình, để vẽ cho đẹp. Tôi tính vậy!
             // có hệ số co rồi thì nhân c cho hệ số co: ở đây là tìm đường ax + by + c*scale = 0 song song với ax + by + c = 0 mà cắt 2 trục không cắt gốc.
             let C = c*scale; // ------hệ số C lớn này sẽ trả ra để dùng tìm miền gạch chéo.------
@@ -77,7 +77,7 @@ function timKieuGachCheo(a,b){// ra kết quả tọa độ trong SVG luôn ki�
     
     // A, B là tọa độ pháp tuyến, 
     let A = a;
-    let B = b;
+    let B = -b;
     if (A<0){// đổi dấu cho A luôn dương
         A = -A;
         B = -B;
@@ -173,6 +173,245 @@ function ghiMienGachCheo(cacDiem){
 }
 
 
+// hàm lấy kích thước của khung chữ nhật bao ngoài một mã svg nào đó
+function layKichThuoc(text){
+let svgString=`<svg xmlns="http://www.w3.org/2000/svg" width="200" height="100" >
+    <defs>
+        <g id="kichThuoc">
+            ${text}
+        </g>
+    </defs>
+    <use id="tam" href="#kichThuoc" x="0" y="0"/>
+</svg>`;
+
+let parser = new DOMParser();
+let svgDoc = parser.parseFromString(svgString,`image/svg+xml`);
+
+let svgEle = svgDoc.documentElement;
+
+let temp = document.getElementById('temp');
+temp.appendChild(svgEle);
+
+let svgImg = svgEle.getElementById('tam');// lấy thẻ use ra đo kích thước
+
+let box = svgImg.getBBox();
+svgEle.remove();
+
+return box;
+}
+
+// hàm vẽ số nguyên ra chuỗi svg. kết quả là các thẻ svg mô tả nó.
+function veSoNguyenSVG(so){
+    let stringSVG = `<text font-size="16" x="0" y="0"> ${so} </text>`;
+    return stringSVG;
+}
+
+// hàm vẽ phân số ra chuỗi svg, kết quả là các thẻ svg mô tả nó.
+function vePhanSoSVG(phanSo){
+    let tuSoSVG = `<text font-size="16" x="0" y="0"> ${Math.abs(phanSo.tuso)} </text>`;// vẽ cái tử số dương ra trước để đo kích thước
+    let kichThuocTuSo = layKichThuoc(tuSoSVG);// lấy kích thước tử số để vẽ tiếp.
+    let mauSoSVG = `<text font-size="16" x="0" y="0"> ${phanSo.mauso} </text>`;// cái mẫu số ra luôn
+    let kichThuocMauSo = layKichThuoc(mauSoSVG);// lấy kích thước mẫu số.
+    // vẽ ra phân số thôi.
+    // tử số thì bình thường:
+    let stringSVG = `<text font-size="16" x="0" y="0"> ${Math.abs(phanSo.tuso)} </text>`;
+    // xác định mẫu số nằm ở dưới và canh chính giữa với tử số, nên tính toán tọa độ theo kích thước tử mẫu, chừa thêm chỗ vẽ gạch phân số
+    stringSVG +=`<text font-size="16" x="${(kichThuocTuSo.width-kichThuocMauSo.width)/2}" y="${ - kichThuocMauSo.y}"> ${phanSo.mauso} </text>`;
+    // giờ vẽ thêm cái gạch nữa là xong: nó dài hơn cả tử mẫu:
+    stringSVG += `<line x1="${-Math.max(kichThuocTuSo.width,kichThuocMauSo.width)/2+kichThuocTuSo.width/2}" y1="2"`;// điểm đầu
+    stringSVG += ` x2="${Math.max(kichThuocTuSo.width,kichThuocMauSo.width)/2+kichThuocTuSo.width/2-4}" y2="2" stroke="black" />`;// đểm cuối
+    if (phanSo.tuso < 0){
+        stringSVG += `<text font-size="16" x="${-Math.max(kichThuocTuSo.width,kichThuocMauSo.width)/2+kichThuocTuSo.width/2-8}" y="5.5"> - </text>`;
+    }
+    
+    return stringSVG;
+}
+
+// hàm vẽ tọa độ ra chuỗi SVG
+function veGiaoSVG(phanSo){
+    if (phanSo.mauso===1){
+        return veSoNguyenSVG(phanSo.tuso);
+    } else {
+        return vePhanSoSVG(phanSo);
+    }
+}
+
+// hàm vẽ tọa độ. Ra chính xác vị trí và giá trị của hoành độ, tung độ.
+// có nhiều giao điểm nên thêm 1 biến đếm số giao để tránh trùng.
+let soLuongGiaoDiem = 0;
+function veToaDoCacDiemGiao(a,b,c,list,dau){
+
+    let veToaDoSVG = ``;// kết quả trả ra toàn bộ code vẽ tọa độ đúng giao điểm.
+    let C=list[4];// hệ số C lớn đã scale
+
+    if (a ===0 & c != 0){// b khác 0, c khác 0, vẽ 1 điểm y = -c/b
+
+        let giao = new Fraction(-c,b);// tọa độ giao điểm với Oy
+        let boxGiaoSVG = `<defs> 
+        <g id="giaoDiem${soLuongGiaoDiem}">
+        ${veGiaoSVG(giao)}
+        </g>
+        </defs>`; // chuỗi svg để vẽ ra tung độ giao điểm.
+        veToaDoSVG += boxGiaoSVG;
+
+        // sau khi có group để vẽ phân số thì tìm tọa độ để đặt nó vô:
+        let kichThuoc = layKichThuoc(veGiaoSVG(giao));//lấy kích thước của box vẽ tọa độ giao điểm
+    
+
+        if (dau==='<' || dau==='\\leq'){// hướng lấy nghiệm là (0,-b) khi đó:
+            // hướng lên:
+            if (-b>0){// đặt box tọa độ lên cao
+                let toaDo = doiSVG([10,-C/b+kichThuoc.height-10]);// dùng C lớn để xác định điểm vẽ. và dịch mốc vẽ lên trên.
+                veToaDoSVG += `<use href="#giaoDiem${soLuongGiaoDiem}" x="${toaDo[0]}" y="${toaDo[1]}" />`;// vẽ giá trị tọa độ tại điểm xác định
+            // hướng xuống:
+            } else {// box tọa độ ngay mốc
+                let toaDo = doiSVG([10,-C/b-kichThuoc.height+5]);// dùng C lớn để xác định điểm vẽ. Ngay tại điểm mốc.
+                veToaDoSVG += `<use href="#giaoDiem${soLuongGiaoDiem}" x="${toaDo[0]}" y="${toaDo[1]}" />`;// vẽ giá trị tọa độ tại điểm xác định
+            }
+        } else {// hướng lấy nghiệm là (0,b) khi đó, giống như trên nhưng thay điều kiện là b > < 0
+            // hướng lên:
+            if (b>0){// đặt box tọa độ lên cao
+                let toaDo = doiSVG([10,-C/b + kichThuoc.height-10]);// dùng C lớn để xác định điểm vẽ. và dịch mốc vẽ lên tên.
+                veToaDoSVG += `<use href="#giaoDiem${soLuongGiaoDiem}" x="${toaDo[0]}" y="${toaDo[1]}" />`;// vẽ giá trị tọa độ tại điểm xác định
+            // hướng xuống:
+            } else {// box tọa độ ngay mốc
+                let toaDo = doiSVG([1,-C/b - kichThuoc.height+5]);// dùng C lớn để xác định điểm vẽ. Ngay tại điểm mốc.
+                veToaDoSVG += `<use href="#giaoDiem${soLuongGiaoDiem}" x="${toaDo[0]}" y="${toaDo[1]}" />`;// vẽ giá trị tọa độ tại điểm xác định
+            }
+        }
+        soLuongGiaoDiem ++;
+    }
+
+    if (b===0 & c != 0){// a khác 0, c khác 0, vẽ 1 điểm x = -c/a. vẽ như trên nhưng thay b bằng a và trái/phải.
+
+        let giao = new Fraction(-c,a);// tọa độ giao điểm với Oy
+        let boxGiaoSVG = `<defs> 
+        <g id="giaoDiem${soLuongGiaoDiem}">
+        ${veGiaoSVG(giao)}
+        </g>
+        </defs>`; // chuỗi svg để vẽ ra tung độ giao điểm.
+        veToaDoSVG += boxGiaoSVG;
+
+        // sau khi có group để vẽ phân số thì tìm tọa độ để đặt nó vô:
+        let kichThuoc = layKichThuoc(veGiaoSVG(giao));//lấy kích thước của tọa độ giao điểm (KHÔNG PHẢI CÁI BOX)
+
+        if (dau==='<' || dau==='\\leq'){// hướng lấy nghiệm là (-a,0) khi đó:
+            // hướng trái
+            if (-a<0){// đặt box tọa độ qua trái
+                let toaDo = doiSVG([-C/a-kichThuoc.width,-kichThuoc.height]);// dùng C lớn để xác định điểm vẽ. và dịch mốc vẽ qua trái.
+                veToaDoSVG += `<use href="#giaoDiem${soLuongGiaoDiem}" x="${toaDo[0]}" y="${toaDo[1]}" />`;// vẽ giá trị tọa độ tại điểm xác định
+            // hướng phải
+            } else {// box tọa độ ngay mốc
+                let toaDo = doiSVG([-C/a+10,-kichThuoc.height]);// dùng C lớn để xác định điểm vẽ. Ngay tại điểm mốc.
+                veToaDoSVG += `<use href="#giaoDiem${soLuongGiaoDiem}" x="${toaDo[0]}" y="${toaDo[1]}" />`;// vẽ giá trị tọa độ tại điểm xác định
+            }
+        } else {// hướng lấy nghiệm là (a,0) khi đó, giống như trên nhưng thay điều kiện là a > < 0
+            // hướng trái:
+            if (a<0){// đặt box tọa độ qua trái
+                let toaDo = doiSVG([-C/a-kichThuoc.width,-kichThuoc.height]);// dùng C lớn để xác định điểm vẽ. và dịch mốc vẽ qua trái.
+                veToaDoSVG += `<use href="#giaoDiem${soLuongGiaoDiem}" x="${toaDo[0]}" y="${toaDo[1]}" />`;// vẽ giá trị tọa độ tại điểm xác định
+            // hướng phải
+            } else {// box tọa độ ngay mốc
+                let toaDo = doiSVG([-C/a+10,-kichThuoc.height]);// dùng C lớn để xác định điểm vẽ. Ngay tại điểm mốc.
+                veToaDoSVG += `<use href="#giaoDiem${soLuongGiaoDiem}" x="${toaDo[0]}" y="${toaDo[1]}" />`;// vẽ giá trị tọa độ tại điểm xác định
+            }
+        }
+        soLuongGiaoDiem++;
+    }
+
+    if (a != 0 & b!= 0 & c != 0){// vẽ 2 điểm (0,-c/b) và (-c/a,0)
+
+        let giaoOx = new Fraction(-c,a); // hoành độ giao điểm Ox
+        let giaoOy = new Fraction(-c,b); // tung độ giao điểm với Oy
+
+        // chuỗi svg để định nghĩa nhóm vẽ ra hoành độ giao điểm.
+        let boxGiaoSVG_Ox = `<defs> 
+        <g id="giaoDiem${soLuongGiaoDiem}-Ox">
+        ${veGiaoSVG(giaoOx)}
+        </g>
+        </defs>`; 
+        // chuỗi svg để định nghĩa nhóm vẽ ra tung độ giao điểm.
+        let boxGiaoSVG_Oy = `<defs> 
+        <g id="giaoDiem${soLuongGiaoDiem}-Oy">
+        ${veGiaoSVG(giaoOy)}
+        </g>
+        </defs>`; 
+        // nối vô 
+        veToaDoSVG += boxGiaoSVG_Ox + boxGiaoSVG_Oy;
+
+        // sau khi có group để vẽ phân số thì tìm tọa độ để đặt nó vô:
+        let kichThuoc_giaoOx = layKichThuoc(veGiaoSVG(giaoOx));// lấy kích thước của hoành độ giao điểm với Ox (KHÔNG PHẢI CÁI BOX)
+        let kichThuoc_giaoOy = layKichThuoc(veGiaoSVG(giaoOy));// lấy kích thước của hoành độ giao điểm với Ox (KHÔNG PHẢI CÁI BOX)
+
+
+        // tìm vecto chỉ hướng vẽ nghiệm:
+        let vectoHuong = [a,b];// hướng mặc định là vecto a,b
+        if ( (dau===`<` || dau===`\\leq`) ){// nếu dấu < \\leq thì đổi chiều
+            vectoHuong = [-a,-b];
+        }
+
+        // tìm hướng vẽ:
+        let huong = ``;
+        if (vectoHuong[1] > 0){
+            huong +='tren-';
+        } else {
+            huong += 'duoi-';
+        }
+        if (vectoHuong[0] > 0){
+            huong += 'phai';
+        } else {
+            huong +='trai';
+        }
+
+        // có hướng rồi thì vẽ:
+        switch (huong){
+            case 'tren-phai':
+                {
+                    // vẽ giao Ox trước:
+                    let toaDo = doiSVG([-C/a+10,kichThuoc_giaoOx.height-5]);// dùng C lớn để xác định điểm vẽ. và dịch mốc vẽ lên trên.
+                    veToaDoSVG += `<use href="#giaoDiem${soLuongGiaoDiem}-Ox" x="${toaDo[0]}" y="${toaDo[1]}" />`;// vẽ giá trị tọa độ tại điểm xác định
+                     // vẽ giao Oy trước:
+                    toaDo = doiSVG([0+10,-C/b+ kichThuoc_giaoOx.height-5]);// dùng C lớn để xác định điểm vẽ. và dịch mốc vẽ lên trên.
+                    veToaDoSVG += `<use href="#giaoDiem${soLuongGiaoDiem}-Oy" x="${toaDo[0]}" y="${toaDo[1]}" />`;// vẽ giá trị tọa độ tại điểm xác định
+                    break;
+                }
+            case 'duoi-phai':
+                {
+                    // vẽ giao Ox trước:
+                    let toaDo = doiSVG([-C/a + 5,0-kichThuoc_giaoOx.height+5]);// dùng C lớn để xác định điểm vẽ. mốc giữ nguyên.
+                    veToaDoSVG += `<use href="#giaoDiem${soLuongGiaoDiem}-Ox" x="${toaDo[0]}" y="${toaDo[1]}" />`;// vẽ giá trị tọa độ tại điểm xác định
+                     // vẽ giao Oy trước:
+                    toaDo = doiSVG([0 + 5,-C/b-kichThuoc_giaoOy.height+5]);// dùng C lớn để xác định điểm vẽ. mốc giữ nguyên.
+                    veToaDoSVG += `<use href="#giaoDiem${soLuongGiaoDiem}-Oy" x="${toaDo[0]}" y="${toaDo[1]}" />`;// vẽ giá trị tọa độ tại điểm xác định
+                    break;
+                }
+            case 'tren-trai':
+                {
+                    // vẽ giao Ox trước:
+                    let toaDo = doiSVG([-C/a-kichThuoc_giaoOx.width , kichThuoc_giaoOx.height-5]);// dùng C lớn để xác định điểm vẽ. và dịch mốc vẽ lên trên và qua trái.
+                    veToaDoSVG += `<use href="#giaoDiem${soLuongGiaoDiem}-Ox" x="${toaDo[0]}" y="${toaDo[1]}" />`;// vẽ giá trị tọa độ tại điểm xác định
+                     // vẽ giao Oy trước:
+                    toaDo = doiSVG([ - kichThuoc_giaoOy.width, -C/b+kichThuoc_giaoOy.height-5]);// dùng C lớn để xác định điểm vẽ. và dịch mốc vẽ lên trên và qua trái.
+                    veToaDoSVG += `<use href="#giaoDiem${soLuongGiaoDiem}-Oy" x="${toaDo[0]}" y="${toaDo[1]}" />`;// vẽ giá trị tọa độ tại điểm xác định
+                    break;
+                }
+            case 'duoi-trai':
+                {
+                    // vẽ giao Ox trước:
+                    let toaDo = doiSVG([-C/a - kichThuoc_giaoOx.width-5,0-kichThuoc_giaoOx.height+5]);// dùng C lớn để xác định điểm vẽ. và dịch mốc vẽ qua trái.
+                    veToaDoSVG += `<use href="#giaoDiem${soLuongGiaoDiem}-Ox" x="${toaDo[0]}" y="${toaDo[1]}" />`;// vẽ giá trị tọa độ tại điểm xác định
+                     // vẽ giao Oy trước:
+                    toaDo = doiSVG([-kichThuoc_giaoOy.width-5,-C/b-kichThuoc_giaoOy.height+5]);// dùng C lớn để xác định điểm vẽ. và dịch mốc vẽ qua trái.
+                    veToaDoSVG += `<use href="#giaoDiem${soLuongGiaoDiem}-Oy" x="${toaDo[0]}" y="${toaDo[1]}" />`;// vẽ giá trị tọa độ tại điểm xác định
+                    break;
+                }
+        }
+        soLuongGiaoDiem++;
+    }
+
+    return veToaDoSVG;
+}
+
 // hàm vẽ miền nghiệm bất phương trình.
 let demSoLuongSVG = 0;// do các svg trong cùng 1 html chia sẻ pattern nên thêm số này vô mỗi pattern để khác biệt.
 function veMienNghiemBPT(a,b,c,dau){// a, b, c nguyên, dau là "<",">","\\leq","\\geq".
@@ -215,6 +454,7 @@ function veMienNghiemBPT(a,b,c,dau){// a, b, c nguyên, dau là "<",">","\\leq",
     <polygon points="${mienGachCheo}" stroke-width="0.5" fill="url(#gachCheo${demSoLuongSVG})" />
     <!-- đường thẳng ax+by+c=0 -->
     <line ${duongThang} stroke="black" stroke-width="2"/>
+    ${veToaDoCacDiemGiao(a,b,c,diem,dau)}
     </svg>`;
     demSoLuongSVG++;// tăng số lượng svg lên 1.
     return stringSVG;
@@ -303,14 +543,16 @@ function timMienNghiem_BPTBacNhat_2An(){
     equation.innerHTML = mathString( `${ghiBPT2anBac1(a,b,c,dau)}` );
 
     // tạo các đáp án:
+    let doiDau = {'<':'\\geq', '>':'\\leq', '\\leq':'>', '\\geq':'<'};
     // Đáp án 1: đúng
     let dapAn0 = `${veMienNghiemBPT(a,b,c,dau)}`;
     // Đáp án 2: sai điểm cắt
-    let dapAn1 = `${veMienNghiemBPT(b,a,c,dau)}`;
+    let dapAn1 = `${veMienNghiemBPT(a,b,-c,dau)}`;
+   
     // Đáp án 3: sai trục luôn
-    let dapAn2 = `${veMienNghiemBPT(b,a,-c,dau)}`;
-    // Đáp án 4: to sai miền
-    let doiDau = {'<':'\\geq', '>':'\\leq', '\\leq':'>', '\\geq':'<'};
+    let dapAn2 = `${veMienNghiemBPT(-a,b,c,dau)}`;
+    // Đáp án 4: tô sai miền
+    
     let dapAn3 = `${veMienNghiemBPT(a,b,c,doiDau[dau])}`;
 
     // hiện các đáp án và hiệu ứng chọn.
