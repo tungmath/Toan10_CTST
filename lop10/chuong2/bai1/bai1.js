@@ -1,14 +1,14 @@
 // Lớp 10. Chương 2. Bài 1: Bất phương trình bậc nhất hai ẩn.
 
-//  1. NHẬN BIẾT BẤT PHƯƠNG TRÌNH BẬC NHẤT 2 ẨN.
+//  1. TÌM MIỀN NGHIỆM CỦA BẤT PHƯƠNG TRÌNH BẬC NHẤT 2 ẨN.
 //  2. TÌM NGHIỆM CỦA BẤT PHƯƠNG TRÌNH BẬC NHẤT 2 ẨN.
-//  3. TÌM MIỀN NGHIỆM CỦA BẤT PHƯƠNG TRÌNH BẬC NHẤT 2 ẨN.
+//  3. NHẬN BIẾT BẤT PHƯƠNG TRÌNH BẬC NHẤT 2 ẨN.
 //  4. CHO MIỀN NGHIỆM, TÌM LẠI BẤT PHƯƠNG TRÌNH BẬC NHẤT 2 ẨN.
 
 
 // để vẽ hình, tôi chọn vẽ bằng định dạng svg.
 
-// khích thức khung hình:
+// đặt khích thức khung hình:
 let rongSVG = caoSVG = 400;
 
 // hàm đổi tọa độ từ Đề-các sang tọa độ trong SVG với gốc nằm chính giữa khung hình. Nhận vào cặp tọa độ kiểu list  cho ra kiểu list luôn.
@@ -413,7 +413,8 @@ function veToaDoCacDiemGiao(a,b,c,list,dau){
 }
 
 // hàm vẽ miền nghiệm bất phương trình.
-let demSoLuongSVG = 0;// do các svg trong cùng 1 html chia sẻ pattern nên thêm số này vô mỗi pattern để khác biệt.
+// do các svg trong cùng 1 html chia sẻ pattern nên thêm biến đếm này vô mỗi pattern để khác biệt.
+let demSoLuongSVG = 0;
 function veMienNghiemBPT(a,b,c,dau){// a, b, c nguyên, dau là "<",">","\\leq","\\geq".
     // xác định bờ của miền nghiệm.
     let diem = tim2Diem_veBoMienNghiem(a,b,c);// tọa độ gốc
@@ -523,7 +524,7 @@ function ghiBPT2anBac1(a,b,c,dau){
     return string;
 }
 
-// 3. TÌM MIỀN NGHIỆM CỦA BẤT PHƯƠNG TRÌNH BẬC NHẤT 2 ẨN.
+// 1. TÌM MIỀN NGHIỆM CỦA BẤT PHƯƠNG TRÌNH BẬC NHẤT 2 ẨN.
 function timMienNghiem_BPTBacNhat_2An(){
     // tạo ax + by + c thỏa một số điều kiện nghiệm cho kết quả ra nhỏ.
     let a=soNguyen(10);
@@ -558,7 +559,119 @@ function timMienNghiem_BPTBacNhat_2An(){
     // hiện các đáp án và hiệu ứng chọn.
     hienTracNghiem4LuaChon(dapAn0,dapAn1,dapAn2,dapAn3,1);
 }
+// HẾT HÀM 1
 
+// hàm tìm cặp số thảo/không thỏa một bất phương trình bậc nhất 2 ẩn cho trước
+function nghiemBPT_bacNhat_2An(a,b,c,dau,thoa){
+    // hàm so sánh với 0: so sánh "số dau 0" thỏa ra true, không thì false.
+    function soVoi0(giaTri,dau){
+        if (dau===`<`){
+            if(giaTri<0){
+                return true;
+            } else {
+                return false;
+            }
+        }
+        if (dau===`\\leq`){
+            if(giaTri<=0){
+                return true;
+            } else {
+                return false;
+            }
+        }
+        if (dau===`>`){
+            if(giaTri>0){
+                return true;
+            } else {
+                return false;
+            }
+        }
+        if (dau===`\\geq`){
+            if(giaTri>=0){
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+    // hết hàm so sánh với 0
+
+    // tạo 2 giá trị hoành và tung:
+    let x = new Fraction(soNguyen(20),soNguyenKhac0(8));
+    let y = new Fraction(soNguyen(20),soNguyenKhac0(8));
+
+    // kiểm xem có thỏa điều kiện tạo nghiệm hay không, không thì tạo ra tới chừng nào thỏa.
+    // nếu dạng "by + c dau 0"
+    if (a === 0){
+        while (soVoi0(b*y.tuso/y.mauso+c,dau)===thoa){
+            y = congPhanSo(new Fraction(soNguyen(20),soNguyenKhac0(8)),new Fraction(Math.round(-c/b),1));
+        }
+    }
+    // nếu dạng "ax + c dau 0"
+    if (b === 0){
+        while (soVoi0(a*x.tuso/x.mauso+c,dau)===thoa){
+            y = congPhanSo(new Fraction(soNguyen(20),soNguyenKhac0(8)),new Fraction(Math.round(-c/a),1));
+        }
+    }
+    // nếu a và b khác 0:
+    if (a != 0 & b != 0){
+        // tìm khung chữ nhật có đường chéo là bờ nghiệm.
+        let x1 = 20;
+        let x2 = -20; // x1 > x2
+        let y1 = Math.round((-c-a*x1)/b);
+        let y2 = Math.round((-c-a*x2)/b);
+        while(soVoi0(a*x.tuso/x.mauso + b*y.tuso/y.mauso + c)===dau){
+            // random ra điểm từ miền này.
+            let x_mau = soNguyenDuong(5);
+            x = new Fraction( x2*x_mau+soNguyenDuong((x1-x2)*x_mau) , x_mau);
+            let y_mau = soNguyenDuong(5);
+            y = new Fraction( Math.min(y1,y2)*y_mau+soNguyenDuong(Math.abs(y1-y2)*y_mau) , y_mau);
+        }
+    }
+
+    // trả về kết quả là chuỗi text:
+    return `\\left(${ghiPhanSo(x)} ; ${ghiPhanSo(y)}\\right)`;
+}
+
+// 2. TÌM NGHIỆM CỦA BẤT PHƯƠNG TRÌNH BẬC NHẤT 2 ẨN.
+function timNghiemBPT_bacNhat_2An(){
+
+     // tạo ax + by + c thỏa một số điều kiện nghiệm cho kết quả ra nhỏ.
+    let a=soNguyen(10);
+    let b=soNguyen(10);
+    let c=soNguyen(10);
+    while(a*a+b*b===0){
+        a=soNguyen(10);
+        b=soNguyen(10);
+    }
+    // tìm dấu:
+    let dau=[`<`,`>`,`\\leq`,`\\geq`][Math.floor(Math.random()*4)];
+    // thuộc hay không thuộc
+    let thoa = true;
+    if (Math.round(Math.random())<0.5){
+        thoa = false;
+    }
+    let tuDien ={true:``,false:`không`};
+
+    // nội dung câu hỏi:
+    content.innerHTML = `Điểm nào sau đây ${tuDien[thoa]} thuộc miền nghiệm của bất phương trình:`;
+    // ghi dữ kiện câu hỏi ra:
+    equation.innerHTML = mathString( `${ghiBPT2anBac1(a,b,c,dau)}` );
+
+    // tạo các đáp án:
+    // Đáp án 1: đúng
+    let dapAn1 = mathString(`${nghiemBPT_bacNhat_2An(a,b,c,dau,thoa)}`);
+    // Đáp án 2: sai
+    let dapAn2 = mathString(`${nghiemBPT_bacNhat_2An(a,b,c,dau,!thoa)}`);
+    // Đáp án 3: sai
+    let dapAn3 = mathString(`${nghiemBPT_bacNhat_2An(a,b,c,dau,!thoa)}`);
+    // Đáp án 4: sai
+    let dapAn4 = mathString(`${nghiemBPT_bacNhat_2An(a,b,c,dau,!thoa)}`);
+
+    // hiện các đáp án và hiệu ứng chọn.
+    hienTracNghiem4LuaChon(dapAn1,dapAn2,dapAn3,dapAn4,1);
+}
+// HẾT HÀM 2.
 
 let content = document.querySelector(".content");
 let equation = document.querySelector(".equation");
@@ -567,9 +680,11 @@ let resultButton = document.querySelector('#result');
 let restartButton = document.querySelector("#restart");
 
 restartButton.addEventListener("click", () => {
-    switch (Math.floor(Math.random())+1) { // Tự động chọn dạng câu hỏi: DÙNG FLOOR ĐỂ LÀM TRÒN XUỐNG
+    switch (Math.floor(Math.random()*2)+1) { // Tự động chọn dạng câu hỏi: DÙNG FLOOR ĐỂ LÀM TRÒN XUỐNG
         case 1:
             timMienNghiem_BPTBacNhat_2An();
             break;
+        case 2:
+            timNghiemBPT_bacNhat_2An();
     }
 });
